@@ -7,7 +7,10 @@ boat_df = pd.read_csv('boat_dataset.csv', encoding = 'latin-1') #UTF-8 can't dec
 
 st.header('Yacht and Motorboat Pricing')
 st.write("In this project I'll present an overview on the main characteristics that affect the final price of a yacht or a motor boat.\nThe DataFrame taken in exam is the following:")
-st.write(boat_df)
+st.write(boat_df.head())
+st.write(boat_df.tail())
+if st.button('Complete DataFrame'): #in order to visualize all the dataframe
+    st.write(boat_df)
 st.write('Select the voice "Explore the DataFrame" to find more about it.')
 
 st.sidebar.subheader('Settings')
@@ -28,5 +31,8 @@ for i in range(10344):
   new_Length.append(value)  
  
 boat_df['Length'] = new_Length
+
+#Filling the null values in Cert Number of People
+
 
 
