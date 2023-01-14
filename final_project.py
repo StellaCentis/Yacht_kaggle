@@ -35,13 +35,15 @@ if st.sidebar.checkbox('Explore the DataFrame'):
     st.text(s) #text ratheer than write to print fixed-width and preformatted text
     st.write('''For sure, we know price, category and type of a given boat. Its length, model, history and type of fuel are known for the most of the candidates.
     \nIt can be noticed that "Length" is a column of strings: a float number followed by letter "m", which means meter. Therefore it is better to turn it into a float 
-    column in order to take advantage of this parameter.
+    column in order to take advantage of this parameter. Analogously it has been done with columns "Width" and "Depth".
+    \nThese parameters are useful in order to choose the right berth and to know where the boat can navigate. In addiction, boats under 10 m length don't have to be declared to the tax authorities in Italy.
+     In EU there are limitations on the boat license according to the length of the boat. Thus it's really important for buyer to know these data.
     ''')
     st.write('''
     One person can be embarked for each linear meter of boat's length: i.e., if the boat is 13.7m long, 13 people can be embarked. Thus we can use the information given by column 
     Length to fill up the missing values of column Cert Number of People. I replaced the null values with the second entry of the tuple returned by the function modf() from the library math, 
     using a for cycle on the indexes of Cert Number of People's null entries. In order to find the latter, I used a boolean mask with the function isnan() from the library numpy.
-    We end up with 10336 non-null values instead of 3597.''')
+    We end up with 10336 non-null float values instead of 3597.''')
 #Length in float
 new_Length = []
 for i in range(10344):
@@ -51,6 +53,26 @@ for i in range(10344):
   new_Length.append(value)  
  
 boat_df['Length'] = new_Length
+
+#Width in float
+new_Width = []
+for i in range(10344):
+  item = str(boat_df.loc[i,'Width'])
+  new_item = item.replace(' m','')
+  value = float(new_item)
+  new_Width.append(value)
+
+boat_df['Width'] = new_Width
+
+#Depth in float
+new_Depth = []
+for i in range(10344):
+  item = str(boat_df.loc[i,'Width'])
+  new_item = item.replace(' m','')
+  value = float(new_item)
+  new_Depth.append(value)
+
+boat_df['Depth'] = new_Depth
 
 #Filling the null values in Cert Number of People. Library math is used for the integer part of a number
 null_cert_people_mask = np.isnan(boat_df['Cert Number of People']) #mask for NaN values
