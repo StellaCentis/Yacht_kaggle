@@ -8,7 +8,16 @@ import math
 boat_df = pd.read_csv('boat_dataset.csv', encoding = 'latin-1') #UTF-8 can't decode byte 0xc3, so we have to read the file in this way, because there are no invalid bytes in that encoding
 
 st.header('Yacht and Motorboat Pricing')
-st.write("In this project I'll present an overview on the main characteristics that affect the final price of a yacht or a motor boat.\nThe DataFrame taken in exam is the following:")
+st.write('''
+In this project I'll present an overview on the main characteristics that affect the final price of power boats. In order to have an accurate and proper analysis,
+I interviewed Antonio Centis, holder of Nautica Centis. Founded by Bruno Centis in 1974, Nautica Centis has been a nautical workshop specialized in assembling and 
+repairing marine engines and generators in boats and power boats. They perform ordinary and extraordinary maintenance of marine engines and systems using only original spare parts.
+\nOver the years, Bruno's reliable character led to agreements with important global manufacturers of engines (Man, of which they are a Master workshop, Volvo Penta, and Weber Motor), generators 
+(Onan, Kohler), maneuvering propellers (Sleipner), diesel pre-filters (Separ), batteries and battery chargers (Mastervolt), air conditioning systems (Dometic) and control systems (Yachtcontroller).
+\nToday the workshop is managed by his son, Antonio, with the help of his family, and supported by all the employees who work every day with commitment and passion to guarantee a comprehensive service 
+to customers for the maintenance of their boats.
+\nAntonio led my analysis be realistic and suitable with a person who wants to buy a power boat, having the following DataFrame avaiable.
+''')
 st.write('Its head:')
 st.write(boat_df.head())
 st.write('Its tail:')
@@ -48,4 +57,3 @@ null_cert_people_mask = np.isnan(boat_df['Cert Number of People']) #mask for NaN
 for i in boat_df['Cert Number of People'][null_cert_people_mask].index : 
   a = math.modf(boat_df.loc[i,'Length']) #math.modf returns a tuple of two values. The second is the integer part of the input number
   boat_df.loc[i, 'Cert Number of People'] = a[1]
-
