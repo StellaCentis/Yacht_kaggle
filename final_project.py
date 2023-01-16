@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 import io
 import math
+import new_functions as nf 
 
 boat_df = pd.read_csv('boat_dataset.csv', encoding = 'latin-1') #UTF-8 can't decode byte 0xc3, so we have to read the file in this way, because there are no invalid bytes in that encoding
 
@@ -33,12 +34,12 @@ if st.sidebar.checkbox('Explore the DataFrame'):
     boat_df.info(buf=buffer)
     s = buffer.getvalue()
     st.text(s) #text ratheer than write to print fixed-width and preformatted text
-    st.write('''For sure, we know price, category and type of a given boat. Its length, model, history and type of fuel are known for the most of the candidates.
+    st.write('''For sure, we know price, category and type of a given boat. Its length, model, location, history and type of fuel are known for the most of the candidates.
     \nIt can be noticed that "Length" is a column of strings: a float number followed by letter "m", which means meter. Therefore it is better to turn it into a float 
     column in order to take advantage of this parameter. Analogously it has been done with columns "Width" and "Depth".
     \nThese parameters are useful in order to choose the right berth and to know where the boat can navigate. In addiction, boats under 10 m length don't have to be declared to the tax authorities in Italy.
      In EU there are limitations on the boat license according to the length of the boat. Thus it's really important for buyer to know these data. Therefore, it's appropriate dropping all the rows that have
-     a null entry in column "Width", as they are 63 over 10344. For this aim I used the method notna() to detect valid values in the DataFrame. The resulting DataFrame has 10281 rows now. Then I filled the 
+     a null entry in column "Width", as they are 63 over 10344. For this aim I used the method notna() to detect valid values in the DataFrame. The resulting DataFrame has 10281 rows. Then I filled the 
      null values of column "Depth" with its mean.
     ''')
     st.write('''
@@ -46,6 +47,12 @@ if st.sidebar.checkbox('Explore the DataFrame'):
     Length to fill up the missing values of column Cert Number of People. I replaced the null values with the second entry of the tuple returned by the function modf() from the library math, 
     using a for cycle on the indexes of Cert Number of People's null entries. In order to find the latter, I used a boolean mask with the function isnan() from the library numpy.
     We end up with 10281 non-null float values instead of 3597.''')
+    st.write('''
+    Knowing where the boat is located is an important decisional factor, since transport can be a huge cost. Antonio proposed an example that he saw with his eyes: a boat of 15 m long moved from Naples to Lignano Sabbiadoro
+    has cost 10000 €. Therefore, if you're undecided between two boats but the first is near to you and the second is quite far, you'll choose the first one. The column concerning this parameter gives either
+    the Nation and the city or only the first one. Thus, I created a function that returns the first word of a string and modified the original column. This leds the analysis be easier.
+    
+    ''')
 
 boat_df.columns =  list(map(lambda x : x.replace(' ', '_').lower(), boat_df.columns)) #columns optimized by replacing spaces and lowering letters
 
@@ -91,3 +98,10 @@ for i in boat_df['cert_number_of_people'][null_cert_people_mask].index :
   a = math.modf(boat_df.loc[i,'length']) #math.modf returns a tuple of two values. The second is the integer part of the input number
   boat_df.loc[i, 'cert_number_of_people'] = a[1]
 
+boat_df['location'].fillna('Unknown', inplace=True) #firstly, fill the NaN values 
+#Lets consider only the State. This process let value_counts() perform better, putting together boat of the same Nation
+new_location = []
+for i in range(len(boat_df)):
+  position = nf.first_word(boat_df.iloc[i,32]) #location is the 32nd column
+  new_location.append(position)
+boat_df.location = new_location
