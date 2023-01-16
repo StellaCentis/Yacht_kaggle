@@ -105,3 +105,19 @@ for i in range(len(boat_df)):
   position = nf.first_word(boat_df.iloc[i,32]) #location is the 32nd column
   new_location.append(position)
 boat_df.location = new_location
+
+#number_of_views_last_7_days in integer
+new_views = []
+for i in range(len(boat_df)):
+  new_views.append(int(boat_df.iloc[i,9]))
+
+boat_df['number_of_views_last_7_days'] = new_views
+boat_df.number_of_views_last_7_days.fillna(boat_df.number_of_views_last_7_days.mean(), inplace=True) #fill the NaN values of Number of views last 7 days
+boat_df.manufacturer.fillna('Unknown', inplace=True) #fill the NaN values of Manufacturer
+boat_df.model.fillna('Unknown', inplace=True) #fill the NaN values of Model
+boat_df.year_built.fillna(boat_df['year_built'].mean(), inplace=True) #fill the NaN values of Year built
+boat_df.condition.fillna('Unknown', inplace=True) #fill the NaN values of Condition
+
+#fill the NaN values of Fuel type
+boat_df.engine = list(map(lambda x : str(x).replace(' ', '_').lower(), boat_df.engine)) #some engines are the same but are different accorting to Python as they are capital letters
+boat_df.fuel_type.fillna('Diesel', inplace=True) #Ignoring the NaN values, the first five most common engines of the boats which have null-value fuel type are all diesel
