@@ -121,3 +121,9 @@ boat_df.condition.fillna('Unknown', inplace=True) #fill the NaN values of Condit
 #fill the NaN values of Fuel type
 boat_df.engine = list(map(lambda x : str(x).replace(' ', '_').lower(), boat_df.engine)) #some engines are the same but are different accorting to Python as they are capital letters
 boat_df.fuel_type.fillna('Diesel', inplace=True) #Ignoring the NaN values, the first five most common engines of the boats which have null-value fuel type are all diesel
+
+#Drop of the other columns:
+boat_df.drop(['type','boat_name','year_built','displacement','ce_design_category','engine_performance','fuel_capacity','advertisement_date'],inplace= True, axis=1 )
+boat_df.drop(boat_df.iloc[:, 10:20], inplace=True, axis = 1)
+boat_df.drop(boat_df.iloc[:, 12:15], inplace=True, axis = 1)
+boat_df.drop(boat_df.iloc[:, 14::], inplace=True, axis = 1)
