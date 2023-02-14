@@ -25,10 +25,10 @@ st.write('Its tail:')
 st.write(boat_df.tail())
 if st.button('Complete DataFrame'): #in order to visualize all the dataframe
     st.write(boat_df)
-st.write('Select the voice "Explore the DataFrame" to find more about it.')
+st.write('Select the voice "Exploration and Cleaning of the DataFrame" to find more about it.')
 
 st.sidebar.subheader('Settings')
-if st.sidebar.checkbox('Explore the DataFrame'): 
+if st.sidebar.checkbox('Exploration and Cleaning of the DataFrame'): 
     st.write('The DataFrame has 38 columns and 10344 rows, from which we can discover important aspects of each boat. We can get these information by the next tabular.')
     buffer = io.StringIO() #these steps are necessary to show boat_df.info() on the page by streamlit
     boat_df.info(buf=buffer)
@@ -127,3 +127,9 @@ boat_df.drop(['type','boat_name','year_built','displacement','ce_design_category
 boat_df.drop(boat_df.iloc[:, 10:20], inplace=True, axis = 1)
 boat_df.drop(boat_df.iloc[:, 12:15], inplace=True, axis = 1)
 boat_df.drop(boat_df.iloc[:, 14::], inplace=True, axis = 1)
+
+st.subheader('Relevant plots')
+st.write('''
+in the following plots I will compare some relevant relationships between the attributes chosen: price, category, boat type, manufacturer, model, condition, length, width, depth, cert number
+ of people, engine, fuel type, location and number of views in last 7 days.
+ ''')
