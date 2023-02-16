@@ -51,7 +51,10 @@ if st.sidebar.checkbox('Exploration and Cleaning of the DataFrame'):
     Knowing where the boat is located is an important decisional factor, since transport can be a huge cost. Antonio proposed an example that he saw with his eyes: a boat of 15 m long moved from Naples to Lignano Sabbiadoro
     has cost 10000 €. Therefore, if you're undecided between two boats but the first is near to you and the second is quite far, you'll choose the first one. The column concerning this parameter gives either
     the Nation and the city or only the first one. Thus, I created a function that returns the first word of a string and modified the original column. This leds the analysis be easier.
-    
+    \nBefore going to next section, I have to convert all prices in Euro, in order to be able to compare them. First of all I simplified the notation of the price, by removing ',-'. After having 
+    understood which are the currencies in the column 'price', I converted all the prices in Euro, excepted for the entries 'Price on request'. I computed the mean of the numerical entries, converted in float by using the method astype and I 
+    used the value to fill the 'Price on request' entries.
+  
     ''')
 
 boat_df.columns =  list(map(lambda x : x.replace(' ', '_').lower(), boat_df.columns)) #columns optimized by replacing spaces and lowering letters
@@ -127,6 +130,70 @@ boat_df.drop(['type','boat_name','year_built','displacement','ce_design_category
 boat_df.drop(boat_df.iloc[:, 10:20], inplace=True, axis = 1)
 boat_df.drop(boat_df.iloc[:, 12:15], inplace=True, axis = 1)
 boat_df.drop(boat_df.iloc[:, 14::], inplace=True, axis = 1)
+
+#Simplification of the notation of the prices:
+new_prices = []
+for i in boat_df.price.index:
+  item = str(boat_df.loc[i,'price'])
+  new_item = item.replace(',-','')
+  new_prices.append(new_item)
+
+boat_df.price = new_prices
+
+#All in Euro
+#modification of all the column price in EUR
+for i in boat_df.index:
+  if 'CHF' in str(boat_df.loc[i, 'price']):
+    words_price = boat_df.loc[i, 'price'].split()
+    if len(words_price[1])<7:
+      words_price[1] = (float(words_price[1])*1000)*1.01
+      boat_df.loc[i, 'price'] = words_price[1]
+    else:
+      words_price[1] = float(words_price[1].replace('.',''))*1.01
+      boat_df.loc[i, 'price'] = words_price[1]
+  elif 'Â£' in str(boat_df.loc[i, 'price']):
+    words_price = boat_df.loc[i, 'price'].split()
+    if len(words_price[1])<7:
+      words_price[1] = (float(words_price[1])*1000)*1.13
+      boat_df.loc[i, 'price'] = words_price[1]
+    else:
+      words_price[1] = float(words_price[1].replace('.',''))*1.13
+      boat_df.loc[i, 'price'] = words_price[1]
+  elif 'DKK' in str(boat_df.loc[i, 'price']):
+    words_price = boat_df.loc[i, 'price'].split()
+    if len(words_price[1])<7:
+      words_price[1] = (float(words_price[1])*1000)*0.13
+      boat_df.loc[i, 'price'] = words_price[1]
+    else:
+      words_price[1] = float(words_price[1].replace('.',''))*0.13
+      boat_df.loc[i, 'price'] = words_price[1]
+  elif 'USD' in str(boat_df.loc[i, 'price']):
+    words_price = boat_df.loc[i, 'price'].split()
+    if len(words_price[1])<7:
+      words_price[1] = (float(words_price[1])*1000)*0.93
+      boat_df.loc[i, 'price'] = words_price[1]
+    else:
+      words_price[1] = float(words_price[1].replace('.',''))*0.93
+      boat_df.loc[i, 'price'] = words_price[1]
+  elif 'SEK' in str(boat_df.loc[i, 'price']):
+    words_price = boat_df.loc[i, 'price'].split()
+    if len(words_price[1])<7:
+      words_price[1] = (float(words_price[1])*1000)*0.09
+      boat_df.loc[i, 'price'] = words_price[1]
+    else:
+      words_price[1] = float(words_price[1].replace('.',''))*0.09
+      boat_df.loc[i, 'price'] = words_price[1]
+  elif 'EUR' in str(boat_df.loc[i, 'price']):
+    words_price = boat_df.loc[i, 'price'].split()
+    words_price[1] = float(words_price[1].replace('.',''))
+    boat_df.loc[i, 'price'] = words_price[1]
+  else: #there are entries of the type 'Price on request'
+    pass
+
+#mean of the numerical values of this column, that I'll use to fill the 'price on request' entries
+mean_price = boat_df[boat_df.loc[:,'price'] != 'Price on request'].price.astype(float).mean()
+boat_df.loc[boat_df.loc[:,'price'] == 'Price on request', 'price'] = mean_price 
+boat_df.price = boat_df.price.astype(float) #in order to have a float column
 
 st.subheader('Relevant plots')
 st.write('''
