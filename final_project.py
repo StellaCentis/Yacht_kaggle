@@ -54,6 +54,7 @@ if st.sidebar.checkbox('Exploration and Cleaning of the DataFrame'):
     \nBefore going to next section, I have to convert all prices in Euro, in order to be able to compare them. First of all I simplified the notation of the price, by removing ',-'. After having 
     understood which are the currencies in the column 'price', I converted all the prices in Euro, excepted for the entries 'Price on request'. I computed the mean of the numerical entries, converted in float by using the method astype and I 
     used the value to fill the 'Price on request' entries.
+    \nThe final DataFrame is visible by selecting 'Final DataFrame'
   
     ''')
 
@@ -195,8 +196,10 @@ mean_price = boat_df[boat_df.loc[:,'price'] != 'Price on request'].price.astype(
 boat_df.loc[boat_df.loc[:,'price'] == 'Price on request', 'price'] = mean_price 
 boat_df.price = boat_df.price.astype(float) #in order to have a float column
 
+if st.button('Final DataFrame'): #in order to visualize all the dataframe
+    st.write(boat_df)
 st.subheader('Relevant plots')
 st.write('''
-in the following plots I will compare some relevant relationships between the attributes chosen: price, category, boat type, manufacturer, model, condition, length, width, depth, cert number
- of people, engine, fuel type, location and number of views in last 7 days.
+In the following plots I will compare some relevant relationships between the attributes chosen: price, category, boat type, manufacturer, model, condition, length, width, depth, cert number
+ of people, engine, fuel type, location and number of views in last 7 days. 
  ''')
