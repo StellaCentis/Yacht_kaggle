@@ -233,3 +233,16 @@ Azimut has pioneered several key yachting trends over the years, such as large f
 Since 2001 the firm has also built motorboats and the current range includes open boats, sportscruisers and flybridges, ranging in size from 28ft to 55ft.
 \nFrom humble beginnings in Oundle, England, Fairline has become an iconic name in yachting worldwide. Its Superboats category won the 2020 Motorboat of the Year awards.
 ''')
+
+#Bar chart to compare the most common manufacturers chosen power boats' mean value 
+labels = boat_df.manufacturer.value_counts().head(10).index[1::]
+data = np.array([boat_df[boat_df.loc[:, 'manufacturer'] == x].price.mean() for x in labels ])
+fig2, ax2 = plt.subplots(figsize=(10,5))
+plt.barh(labels, data, color = colors)
+plt.xlabel('Mean price')
+plt.ylabel('Manufacturer')
+st.write(fig2)
+st.caption("Comparison of the power boats' mean value between the most common manufacturers chosen previously")
+st.write('''
+As we can notice, Sunseeker has the highest mean value for boats, as it focuses on superyachts; followed by Princess, which concernes with luxury lifestyle.
+''')
