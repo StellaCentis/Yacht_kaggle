@@ -203,3 +203,17 @@ st.write('''
 In the following plots I will compare some relevant relationships between the attributes chosen: price, category, boat type, manufacturer, model, condition, length, width, depth, cert number
  of people, engine, fuel type, location and number of views in last 7 days. 
  ''')
+
+#Plot to have an overview of the manufacturers of the power boats in this dataframe
+#In order to have a much more readable manufacturer (also because it is the main one):
+mask = boat_df.manufacturer == 'BÃ©nÃ©teau power boats' 
+boat_df.loc[mask,'manufacturer'] = 'Beneteau'
+colors = plt.get_cmap('Blues')(np.linspace(0.1, 0.9, 10))
+fig = plt.figure(figsize = (8,6))
+plt.pie(boat_df.manufacturer.value_counts().head(10), labels = boat_df.manufacturer.value_counts().head(10).index, colors = colors, autopct = '%.1f%%', startangle = 335)
+
+st.write(fig)
+
+st.write('''
+From the pie chart we can note that Beneteau is the main manifacturer of these power boats.
+''')
