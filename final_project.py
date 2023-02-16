@@ -213,7 +213,23 @@ fig = plt.figure(figsize = (8,6))
 plt.pie(boat_df.manufacturer.value_counts().head(10), labels = boat_df.manufacturer.value_counts().head(10).index, colors = colors, autopct = '%.1f%%', startangle = 335)
 
 st.write(fig)
-
+st.caption('Top 10 manufacturers of the power boats considered.')
 st.write('''
-From the pie chart we can note that Beneteau is the main manifacturer of these power boats.
+From the pie chart we can note that about one third of the boats have an unknown manufacturer; Bénéteau is one of the oldest family-run boatbuilders in the business and the world’s largest producer of yachts, launching more than 10,000 hulls per year. 
+Based in the Vendée region of France, with a second manufacturing base in Marion, South Carolina, Bénéteau is a major player in both the motorboat and sailing yacht markets.
+The Bénéteau Group’s wider portfolio includes a variety of boat brands, such as Four Winns, Glastron, Jeanneau, Prestige, Scarab and Wellcraft.
+\nFounder Henri Jeanneau had a background in cars and planes when he set up this French boatbuilder in 1957. Today the company builds models ranging from the ubiquitous Merry Fisher to the luxury Prestige collection.
+\nSunseeker is currently owned by Chinese group Dalian Wanda, but it remains a British company with manufacturing still based in Poole. Its emphasis is on having fun in the sun, focusing on superyachts and performance boats.
+\nThe American Sea Ray promotes its brand as being a boating lifestyle with an owners club providing discounts on boating-related services and an application-based magazine. The company has won a 
+variety of J.D. Power and Associate awards as well as from the NMMA and marine magazines including Boating. Additionally, Sea Ray is the recipient of a Five Star Diamond Award presented by the American Academy of Hospitality Science for their 
+superb customer service.
+\nPrincess Yachts is one of the true titans of the British boating industry. One of the distinguishing features of Princess is its design partnership with legendary British naval architecture firm Olesinski and Italian styling house Pininfarina.
+Currently owned by L Capital, Princess Yachts are part of the same stable of brands as Louis Vuitton and Moet Hennessy, so their knowledge of the luxury lifestyle is unrivalled.
+\nCantiere Nautico Cranchi, more commonly known as Cranchi Yachts, is one of Italy’s oldest boatbuilders, with a history that can be traced back to 1870.
+Based in the Lombardy region, Cranchi works closely with designer Christian Grande to ensure a consistent Italian style throughout its range, while its primary engine supplier Volvo Penta has a relationship with the brand that has lasted more than 50 years.
+\nAzimut Yachts is one of Italy’s foremost boatbuilders, based at a state-of-the-art 100,000 square metre facility in Avigliana, less than 20 miles west of Turin, which can produce up to 300 boats per year and has built more than 10,000 hulls to date.
+Azimut has pioneered several key yachting trends over the years, such as large frameless windows, electric helm seats and walnut wood interiors.
+\nFounded in 1978 as a sailboat builder, Bavaria Yachtbau is the largest yacht manufacturer in Germany with its headquarters in Giebelstadt.
+Since 2001 the firm has also built motorboats and the current range includes open boats, sportscruisers and flybridges, ranging in size from 28ft to 55ft.
+\nFrom humble beginnings in Oundle, England, Fairline has become an iconic name in yachting worldwide. Its Superboats category won the 2020 Motorboat of the Year awards.
 ''')
