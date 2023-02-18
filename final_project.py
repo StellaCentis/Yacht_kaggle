@@ -114,8 +114,11 @@ boat_df.location = new_location
 
 #number_of_views_last_7_days in integer
 new_views = []
-for i in range(len(boat_df)):
-  new_views.append(int(boat_df.iloc[i,9]))
+for i in boat_df.index:
+  item = boat_df.loc[i,'number_of_views_last_7_days']
+  item = str(item).replace("'","")
+
+  new_views.append(float(item))
 
 boat_df['number_of_views_last_7_days'] = new_views
 boat_df.number_of_views_last_7_days.fillna(boat_df.number_of_views_last_7_days.mean(), inplace=True) #fill the NaN values of Number of views last 7 days
@@ -259,7 +262,7 @@ Select the correlation you want to deepen in the following multi-selection choic
 
 option = st.selectbox(
     'Choose two attributes to compare:',
-    ('Length - Price', 'Width - Price', 'Length - Width', 'Length - Depth','Width - Number of views last 7 days','Length - Number of views last 7 days'))
+    ('Length - Price', 'Width - Price', 'Length - Width', 'Length - Depth'))
 
 if option == 'Length - Price':
   x = boat_df.length
@@ -343,21 +346,4 @@ if option == 'Length - Depth':
   Correlation between length and depth is almost zero. Depth is the heigth of the portion of the boat that remains under water. 
   In some boats, depth can vary according to the boat's wigth, compromising its possibility to navigate in some areas. The access to a 
   marina is conditioned by the max depth a boat can have. Customers shoud verify the requested depth of the marina they would like to stay in.
-  ''')
-
-
-if option == 'Width - Number of views last 7 days':
-  x = boat_df.width
-  y = boat_df.number_of_views_last_7_days
-
-  fig8 = plt.figure()
-  plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
-  plt.title('Correlation between Width and Number of views last 7 days')
-  plt.xlabel('Width')
-  plt.ylabel('Number of views last 7 days')
-  st.pyplot(fig8)
-  expander = st.expander("See explanation")
-  expander.write('''
-  Width and number of views last 7 days are positively correlated, being much more comfortable. These attributes are correlated 
-  also because length and number of views last 7 days are and correlation is a transitive relationship.
   ''')
