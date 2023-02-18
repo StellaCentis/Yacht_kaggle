@@ -308,4 +308,16 @@ if option == 'Width - Price':
   How can be noted, width is not correlated with price. That is because width doesn't impact the final price of a boat. 
   Customers could look for a certain level of width according to the marina they will be in; width does not concerne with their wallet.
   ''')
+
+if option == 'Length - Width':
+  x = boat_df.length
+  y = boat_df.width
+
+  fig6 = plt.figure()
+  plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
+  st.pyplot(fig6)
+  expander = st.expander("See explanation")
+  expander.write('''
+  Length and width are positively correlated, as more the boat is long, more the boat is wide. Anyway, the boat is reduced to a spaghetti.
+  ''')
   
