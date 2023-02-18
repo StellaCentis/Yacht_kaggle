@@ -267,6 +267,7 @@ if option == 'Length - Price':
 
   fig4, (ax4_1, ax4_2) = plt.subplots(2, 1, sharex=True)
   fig4.subplots_adjust(hspace=0.2)  # adjust space between axes
+  plt.title('Correlation between Length and Price')
 
   ax4_1.scatter(x,y, s = 6, facecolors='none', edgecolors='b')
   ax4_2.scatter(x,y, s = 6, facecolors='none', edgecolors='b')
@@ -302,6 +303,9 @@ if option == 'Width - Price':
 
   fig5 = plt.figure()
   plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
+  plt.title('Correlation between Width and Price')
+  plt.xlabel('Width')
+  plt.ylabel('Price')
   st.pyplot(fig5)
   expander = st.expander("See explanation")
   expander.write('''
@@ -315,9 +319,28 @@ if option == 'Length - Width':
 
   fig6 = plt.figure()
   plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
+  plt.title('Correlation between Length and Width')
+  plt.xlabel('Length')
+  plt.ylabel('Width')
   st.pyplot(fig6)
   expander = st.expander("See explanation")
   expander.write('''
   Length and width are positively correlated, as more the boat is long, more the boat is wide. Anyway, the boat is reduced to a spaghetti.
   ''')
   
+if option == 'Length - Depth':
+  x = boat_df.length
+  y = boat_df.depth
+
+  fig6 = plt.figure()
+  plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
+  plt.title('Correlation between Depth and Price')
+  plt.xlabel('Length')
+  plt.ylabel('Depth')
+  st.pyplot(fig6)
+  expander = st.expander("See explanation")
+  expander.write('''
+  Correlation between length and depth is almost zero. Depth is the heigth of the portion of the boat that remains under water. 
+  In some boats, depth can vary according to the boat's wigth, compromising its possibility to navigate in some areas. The access to a 
+  marina is conditioned by the max depth a boat can have. Customers shoud verify the requested depth of the marina they would like to stay in.
+  ''')
