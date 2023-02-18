@@ -262,7 +262,7 @@ Select the correlation you want to deepen in the following multi-selection choic
 
 option = st.selectbox(
     'Choose two attributes to compare between the ones proposed:',
-    ('Length - Price', 'Width - Price', 'Length - Width', 'Length - Depth', 'Number of views last 7 days - Price'))
+    ('Length - Price', 'Width - Price', 'Length - Width', 'Length - Depth', 'Number of views last 7 days - Price', 'Number of views last 7 days - Length'))
 
 if option == 'Length - Price':
   x = boat_df.length
@@ -362,6 +362,24 @@ if option == 'Number of views last 7 days - Price':
   expander.write('''
   Correlation between these two attributes is almost zero: the first doesn't impact on the second and viceversa. 
   This means that, according to this dataframe, customers don't prefer visiting neither the cheapest or the most expensive boats. 
+  The minus sign is due to some points on the upper-left part of the first quadrant of the Cartesian plane. In fact, 
+  whenever two attributes are negatively correlated (correlation equal to -1), their scatter plot is a line with slope -1: y = -x.
+  ''')
+
+if option == 'Number of views last 7 days - Length':
+  x = boat_df.number_of_views_last_7_days
+  y = boat_df.length
+
+  fig9 = plt.figure()
+  plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
+  plt.title('Correlation between Number of views last 7 days and Length')
+  plt.xlabel('Number of views last 7 days')
+  plt.ylabel('Length')
+  st.pyplot(fig9)
+  expander = st.expander("See explanation")
+  expander.write('''
+  Correlation between these two attributes is almost zero: the first doesn't impact on the second and viceversa. 
+  This means that, according to this dataframe, customers don't prefer visiting neither the longest or the shortest. 
   The minus sign is due to some points on the upper-left part of the first quadrant of the Cartesian plane. In fact, 
   whenever two attributes are negatively correlated (correlation equal to -1), their scatter plot is a line with slope -1: y = -x.
   ''')
