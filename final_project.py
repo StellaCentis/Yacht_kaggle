@@ -5,6 +5,8 @@ import streamlit as st
 import io
 import math
 import new_functions as nf 
+import seaborn as sb
+
 
 boat_df = pd.read_csv('boat_dataset.csv', encoding = 'latin-1') #UTF-8 can't decode byte 0xc3, so we have to read the file in this way, because there are no invalid bytes in that encoding
 
@@ -212,7 +214,7 @@ colors = plt.get_cmap('Blues')(np.linspace(0.1, 0.9, 10))
 fig = plt.figure(figsize = (8,6))
 plt.pie(boat_df.manufacturer.value_counts().head(10), labels = boat_df.manufacturer.value_counts().head(10).index, colors = colors, autopct = '%.1f%%', startangle = 335)
 
-st.write(fig)
+st.pyplot(fig)
 st.caption('Top 10 manufacturers of the power boats considered.')
 st.write('''
 From the pie chart we can note that about one third of the boats have an unknown manufacturer; Bénéteau is one of the oldest family-run boatbuilders in the business and the world’s largest producer of yachts, launching more than 10,000 hulls per year. 
@@ -245,4 +247,51 @@ st.write(fig2)
 st.caption("Comparison of the power boats' mean value between the most common manufacturers chosen previously")
 st.write('''
 As we can notice, Sunseeker has the highest mean value for boats, as it focuses on superyachts; followed by Princess, which concernes with luxury lifestyle.
+\nThe next plots reflect the considerations that can be taken from the correlation matrix.
 ''')
+fig3 = plt.figure(figsize=(8,6))
+sb.heatmap(boat_df.corr(), annot=True)
+st.write(fig3)
+st.caption('Correlation matrix')
+st.write('''
+Select the correlation you want to deepen in the following multi-selection choice.
+''')
+
+option = st.selectbox(
+    'Choose two attributes to compare:',
+    ('Length - Price', 'Width - Price', 'Length - Width', 'Length - Depth','Width - Number of views last 7 days','Length - Number of views last 7 days'))
+
+if option == 'Length - Price':
+  x = boat_df.length
+  y = boat_df.price
+
+  fig4, (ax4_1, ax4_2) = plt.subplots(2, 1, sharex=True)
+  fig4.subplots_adjust(hspace=0.2)  # adjust space between axes
+
+  ax4_1.scatter(x,y, s = 6)
+  ax4_2.scatter(x,y, s = 6)
+
+  # zoom-in / limit the view to different portions of the data
+  ax4_1.set_ylim(1.4e7,3.1e7)  # outliers only
+  ax4_2.set_ylim(0,0.5e7)  # most of the data
+  ax4_1.set_yticks([1.5e7,2.4e7,3.2e7])
+  
+  # hide the spines between ax and ax2
+  ax4_1.spines['bottom'].set_visible(False)
+  ax4_2.spines['top'].set_visible(False)
+  ax4_1.xaxis.tick_top()
+  ax4_1.tick_params(labeltop=False)  # don't put tick labels at the top
+  ax4_2.xaxis.tick_bottom()
+
+  d = .15  # proportion of vertical to horizontal extent of the slanted line
+  kwargs = dict(marker=[(-1, -d), (1, d)], markersize=12, linestyle="none", color='k', mec='k', mew=1, clip_on=False)
+  ax4_1.plot([0, 1], [0, 0], transform=ax4_1.transAxes, **kwargs)
+  ax4_2.plot([0, 1], [1, 1], transform=ax4_2.transAxes, **kwargs)
+
+  st.pyplot(fig4)
+  expander = st.expander("See explanation")
+  expander.write('''
+  How can be noted, length is not positively correlated with price. That is because price is determined also by the 
+  condition of the boat, its engine, its manufacturer, its year of construction. The latter can be really meaningful as
+  every boat loses its 30% of value after just one year and its 10% in each following year.
+  ''')
