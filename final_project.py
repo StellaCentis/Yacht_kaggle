@@ -332,15 +332,32 @@ if option == 'Length - Depth':
   x = boat_df.length
   y = boat_df.depth
 
-  fig6 = plt.figure()
+  fig7 = plt.figure()
   plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
-  plt.title('Correlation between Depth and Price')
+  plt.title('Correlation between Length and Depth')
   plt.xlabel('Length')
   plt.ylabel('Depth')
-  st.pyplot(fig6)
+  st.pyplot(fig7)
   expander = st.expander("See explanation")
   expander.write('''
   Correlation between length and depth is almost zero. Depth is the heigth of the portion of the boat that remains under water. 
   In some boats, depth can vary according to the boat's wigth, compromising its possibility to navigate in some areas. The access to a 
   marina is conditioned by the max depth a boat can have. Customers shoud verify the requested depth of the marina they would like to stay in.
+  ''')
+
+
+if option == 'Width - Number of views last 7 days':
+  x = boat_df.width
+  y = boat_df.number_of_views_last_7_days
+
+  fig8 = plt.figure()
+  plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
+  plt.title('Correlation between Width and Number of views last 7 days')
+  plt.xlabel('Width')
+  plt.ylabel('Number of views last 7 days')
+  st.pyplot(fig8)
+  expander = st.expander("See explanation")
+  expander.write('''
+  Width and number of views last 7 days are positively correlated, being much more comfortable. These attributes are correlated 
+  also because length and number of views last 7 days are and correlation is a transitive relationship.
   ''')
