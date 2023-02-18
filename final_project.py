@@ -268,8 +268,8 @@ if option == 'Length - Price':
   fig4, (ax4_1, ax4_2) = plt.subplots(2, 1, sharex=True)
   fig4.subplots_adjust(hspace=0.2)  # adjust space between axes
 
-  ax4_1.scatter(x,y, s = 6)
-  ax4_2.scatter(x,y, s = 6)
+  ax4_1.scatter(x,y, s = 6, facecolors='none', edgecolors='b')
+  ax4_2.scatter(x,y, s = 6, facecolors='none', edgecolors='b')
 
   # zoom-in / limit the view to different portions of the data
   ax4_1.set_ylim(1.4e7,3.1e7)  # outliers only
@@ -291,7 +291,21 @@ if option == 'Length - Price':
   st.pyplot(fig4)
   expander = st.expander("See explanation")
   expander.write('''
-  How can be noted, length is not positively correlated with price. That is because price is determined also by the 
+  How can be noted, length is not correlated with price. That is because price is determined also by the 
   condition of the boat, its engine, its manufacturer, its year of construction. The latter can be really meaningful as
   every boat loses its 30% of value after just one year and its 10% in each following year.
   ''')
+
+if option == 'Width - Price':
+  x = boat_df.width
+  y = boat_df.price
+
+  fig5 = plt.figure()
+  plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
+  st.pyplot(fig5)
+  expander = st.expander("See explanation")
+  expander.write('''
+  How can be noted, width is not correlated with price. That is because width doesn't impact the final price of a boat. 
+  Customers could look for a certain level of width according to the marina they will be in; width does not concerne with their wallet.
+  ''')
+  
