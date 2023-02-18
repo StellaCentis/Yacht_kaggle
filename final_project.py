@@ -261,8 +261,8 @@ Select the correlation you want to deepen in the following multi-selection choic
 ''')
 
 option = st.selectbox(
-    'Choose two attributes to compare:',
-    ('Length - Price', 'Width - Price', 'Length - Width', 'Length - Depth'))
+    'Choose two attributes to compare between the ones proposed:',
+    ('Length - Price', 'Width - Price', 'Length - Width', 'Length - Depth', 'Number of views last 7 days - Price'))
 
 if option == 'Length - Price':
   x = boat_df.length
@@ -346,4 +346,22 @@ if option == 'Length - Depth':
   Correlation between length and depth is almost zero. Depth is the heigth of the portion of the boat that remains under water. 
   In some boats, depth can vary according to the boat's wigth, compromising its possibility to navigate in some areas. The access to a 
   marina is conditioned by the max depth a boat can have. Customers shoud verify the requested depth of the marina they would like to stay in.
+  ''')
+
+if option == 'Number of views last 7 days - Price':
+  x = boat_df.number_of_views_last_7_days
+  y = boat_df.price
+
+  fig8 = plt.figure()
+  plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
+  plt.title('Correlation between Number of views last 7 days and Price')
+  plt.xlabel('Number of views last 7 days')
+  plt.ylabel('Price')
+  st.pyplot(fig8)
+  expander = st.expander("See explanation")
+  expander.write('''
+  Correlation between these two attributes is almost zero: the first doesn't impact on the second and viceversa. 
+  This means that, according to this dataframe, customers don't prefer visiting neither the cheapest or the most expensive boats. 
+  The minus sign is due to some points on the upper-left part of the first quadrant of the Cartesian plane. In fact, 
+  whenever two attributes are negatively correlated (correlation equal to -1), their scatter plot is a line with slope -1: y = -x.
   ''')
