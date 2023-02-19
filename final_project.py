@@ -219,7 +219,8 @@ plt.pie(boat_df.manufacturer.value_counts().head(10), labels = boat_df.manufactu
 
 st.pyplot(fig)
 st.caption('Top 10 manufacturers of the power boats considered.')
-st.write('''
+expander_history = st.expander("Discover breefly their history")
+expander_history.write('''
 From the pie chart we can note that about one third of the boats have an unknown manufacturer; Bénéteau is one of the oldest family-run boatbuilders in the business and the world’s largest producer of yachts, launching more than 10,000 hulls per year. 
 Based in the Vendée region of France, with a second manufacturing base in Marion, South Carolina, Bénéteau is a major player in both the motorboat and sailing yacht markets.
 The Bénéteau Group’s wider portfolio includes a variety of boat brands, such as Four Winns, Glastron, Jeanneau, Prestige, Scarab and Wellcraft.
@@ -239,8 +240,38 @@ Since 2001 the firm has also built motorboats and the current range includes ope
 \nFrom humble beginnings in Oundle, England, Fairline has become an iconic name in yachting worldwide. Its Superboats category won the 2020 Motorboat of the Year awards.
 ''')
 
-#Bar chart to compare the most common manufacturers chosen power boats' mean value 
+#Create data for the next bxplot: price for each manufaturer
 labels = boat_df.manufacturer.value_counts().head(10).index[1::]
+data_boxplot = np.array([boat_df[boat_df.loc[:, 'manufacturer'] == x].price for x in labels ], dtype = object)
+
+# Create a figure and axis for the next boxplot
+fig_1, ax_1 = plt.subplots(figsize=(10,8))
+
+# Create a box plot
+ax_1.boxplot(data_boxplot)
+
+# Set the title and axis labels
+ax_1.set_title("Distribution of prices according to manufacturers")
+ax_1.set_xticklabels( labels , rotation = 45)
+ax_1.set_xlabel("Manufacturer")
+ax_1.set_ylabel("Price")
+st.pyplot(fig_1)
+
+st.write('''
+With this boxplot we can compare the distributions of prices, according to the main nine manufacturers determined. 
+We can notice that Azimut and Fairline power boats have a predominant simmetric distribution and some outliers. Outliers 
+are considered anomalous data because they are far from the other values. In this sense, Sunseeker and Princess are the ones 
+with the main variability in data. Another indicator of variability in data is the height of the box and the length of 
+whiskers. There are no outliers under the lower whiskers, thus their end is the minimum price of the boats. 
+That does not apply to the upper whiskers, as there are ouliers over their extrems.
+\nWhenever the boxes are comparatively short, power boats of that manufacturer have a similar price. On the contrary, 
+they differentiate each other. Some boxes are ina a little bit higher position rather the others, which could suggest a difference 
+between gropus (that is better to investigate). \nMoreover, same median but different distribution is a clear signal that it is always 
+important to consider the pattern of the whole distribution of responses in a box plot.
+\nWe can also compare the mean value of the prices of the selected manufacturers:
+''')
+
+#Bar chart to compare the most common manufacturers chosen power boats' mean value 
 data = np.array([boat_df[boat_df.loc[:, 'manufacturer'] == x].price.mean() for x in labels ])
 fig2, ax2 = plt.subplots(figsize=(10,5))
 plt.barh(labels, data, color = colors)
@@ -270,7 +301,8 @@ if option == 'Length - Price':
 
   fig4, (ax4_1, ax4_2) = plt.subplots(2, 1, sharex=True)
   fig4.subplots_adjust(hspace=0.2)  # adjust space between axes
-  plt.title('Correlation between Length and Price')
+  fig4.suptitle('Comparison between Length and Price')
+  plt.xlabel('Length')
 
   ax4_1.scatter(x,y, s = 6, facecolors='none', edgecolors='b')
   ax4_2.scatter(x,y, s = 6, facecolors='none', edgecolors='b')
