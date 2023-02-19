@@ -6,6 +6,8 @@ import io
 import math
 import new_functions as nf 
 import seaborn as sb
+from statsmodels.graphics.mosaicplot import mosaic 
+
 
 
 boat_df = pd.read_csv('boat_dataset.csv', encoding = 'latin-1') #UTF-8 can't decode byte 0xc3, so we have to read the file in this way, because there are no invalid bytes in that encoding
@@ -56,8 +58,6 @@ if st.sidebar.checkbox('Exploration and Cleaning of the DataFrame'):
     \nBefore going to next section, I have to convert all prices in Euro, in order to be able to compare them. First of all I simplified the notation of the price, by removing ',-'. After having 
     understood which are the currencies in the column 'price', I converted all the prices in Euro, excepted for the entries 'Price on request'. I computed the mean of the numerical entries, converted in float by using the method astype and I 
     used the value to fill the 'Price on request' entries.
-    \nThe final DataFrame is visible by selecting 'Final DataFrame'
-  
     ''')
 
 boat_df.columns =  list(map(lambda x : x.replace(' ', '_').lower(), boat_df.columns)) #columns optimized by replacing spaces and lowering letters
@@ -127,7 +127,8 @@ boat_df.model.fillna('Unknown', inplace=True) #fill the NaN values of Model
 boat_df.year_built.fillna(boat_df['year_built'].mean(), inplace=True) #fill the NaN values of Year built
 boat_df.condition.fillna('Unknown', inplace=True) #fill the NaN values of Condition
 
-#fill the NaN values of Fuel type
+#fill the NaN values of engine and fuel type
+boat_df.engine.fillna('unknown', inplace=True)
 boat_df.engine = list(map(lambda x : str(x).replace(' ', '_').lower(), boat_df.engine)) #some engines are the same but are different accorting to Python as they are capital letters
 boat_df.fuel_type.fillna('Diesel', inplace=True) #Ignoring the NaN values, the first five most common engines of the boats which have null-value fuel type are all diesel
 
@@ -200,6 +201,8 @@ for i in boat_df.index:
 mean_price = boat_df[boat_df.loc[:,'price'] != 'Price on request'].price.astype(float).mean()
 boat_df.loc[boat_df.loc[:,'price'] == 'Price on request', 'price'] = mean_price 
 boat_df.price = boat_df.price.astype(float) #in order to have a float column
+
+st.write("The final DataFrame is visible by selecting 'Final DataFrame'")
 
 if st.button('Final DataFrame'): #in order to visualize all the dataframe
     st.write(boat_df)
@@ -274,7 +277,7 @@ important to consider the pattern of the whole distribution of responses in a bo
 #Bar chart to compare the most common manufacturers chosen power boats' mean value 
 data = np.array([boat_df[boat_df.loc[:, 'manufacturer'] == x].price.mean() for x in labels ])
 fig2, ax2 = plt.subplots(figsize=(10,5))
-plt.barh(labels, data, color = colors)
+plt.barh(labels, sorted(data), color = colors)
 plt.xlabel('Mean price')
 plt.ylabel('Manufacturer')
 st.write(fig2)
@@ -415,3 +418,27 @@ if option == 'Number of views last 7 days - Length':
   The minus sign is due to some points on the upper-left part of the first quadrant of the Cartesian plane. In fact, 
   whenever two attributes are negatively correlated (correlation equal to -1), their scatter plot is a line with slope -1: y = -x.
   ''')
+
+st.write('''
+This DataFrame containes power boats from all over the world. However, the main ten States are all in Europe. 
+\nAlso the five most frequent engines in the DataFrame are displayed in a mosaic plot as follows. Engines in boats - just 
+as for cars - are not all the same. Man is one of the higher in quality, followed by Volvo. Volvo and Volvo Penta are two dinstinctions under the same 
+holding. Suzuki is also good in quality, but it limits in outboard boats. Antonio told me this similitude: Volvo is like buses and Suzuki is like motorbikes, they are 
+just concerning two different kind of worlds.
+''')
+
+col_1, col_2 = st.columns(2)
+
+with col_1:
+  fig_2, ax_2 = plt.subplots(figsize = (6,4))
+  data_mosaic = boat_df.location.value_counts().head(10)
+  labelizer = lambda k: ''
+  mosaic(data_mosaic, gap = 0.025, title='Main 10 Locations', label_rotation = 80, labelizer = labelizer, ax= ax_2)
+  st.pyplot(fig_2)
+  st.caption('Main 10 locations in the DataFrame')
+
+with col_2:
+  fig_3, ax_3 = plt.subplots(figsize = (6,4))
+  mosaic(boat_df.engine.value_counts()[1:5],  title='Most frequent engines', ax=ax_3)
+  st.pyplot(fig_3)
+  st.caption('Main five engines in the DataFrame')
