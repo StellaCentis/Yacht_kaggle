@@ -222,10 +222,10 @@ boat_df.loc[mask,'manufacturer'] = 'Beneteau'
 colors = plt.get_cmap('Blues')(np.linspace(0.1, 0.9, 10))
 fig = plt.figure(figsize = (8,6))
 plt.pie(boat_df.manufacturer.value_counts().head(10), labels = boat_df.manufacturer.value_counts().head(10).index, colors = colors, autopct = '%.1f%%', startangle = 335)
-
+plt.title('Main manufacturers', fontweight="bold")
 st.pyplot(fig)
 st.caption('Top 10 manufacturers of the power boats considered.')
-expander_history = st.expander("Discover breefly their history")
+expander_history = st.expander("Discover briefly their history")
 expander_history.write('''
 From the pie chart we can note that about one third of the boats have an unknown manufacturer; Bénéteau is one of the oldest family-run boatbuilders in the business and the world’s largest producer of yachts, launching more than 10,000 hulls per year. 
 Based in the Vendée region of France, with a second manufacturing base in Marion, South Carolina, Bénéteau is a major player in both the motorboat and sailing yacht markets.
@@ -246,18 +246,15 @@ Since 2001 the firm has also built motorboats and the current range includes ope
 \nFrom humble beginnings in Oundle, England, Fairline has become an iconic name in yachting worldwide. Its Superboats category won the 2020 Motorboat of the Year awards.
 ''')
 
-#Create data for the next bxplot: price for each manufaturer
+#Create data for the next boxplot: price for each manufaturer
 labels = boat_df.manufacturer.value_counts().head(10).index[1::]
 data_boxplot = np.array([boat_df[boat_df.loc[:, 'manufacturer'] == x].price for x in labels ], dtype = object)
 
-# Create a figure and axis for the next boxplot
 fig_1, ax_1 = plt.subplots(figsize=(10,8))
 
-# Create a box plot
 ax_1.boxplot(data_boxplot)
 
-# Set the title and axis labels
-ax_1.set_title("Distribution of prices according to manufacturers")
+ax_1.set_title("Distribution of prices according to manufacturers", fontweight="bold")
 ax_1.set_xticklabels( labels , rotation = 45)
 ax_1.set_xlabel("Manufacturer")
 ax_1.set_ylabel("Price")
@@ -283,6 +280,7 @@ fig2, ax2 = plt.subplots(figsize=(10,5))
 plt.barh(labels, sorted(data), color = colors)
 plt.xlabel('Mean price')
 plt.ylabel('Manufacturer')
+plt.title('Mean prices of the first nine main manufacturers in comparison', fontweight="bold")
 st.write(fig2)
 st.caption("Comparison of the power boats' mean value between the most common manufacturers chosen previously")
 st.write('''
@@ -307,7 +305,7 @@ if option == 'Length - Price':
 
   fig4, (ax4_1, ax4_2) = plt.subplots(2, 1, sharex=True)
   fig4.subplots_adjust(hspace=0.2)  # adjust space between axes
-  fig4.suptitle('Comparison between Length and Price')
+  fig4.suptitle('Correlation between Length and Price', fontweight="bold")
   plt.xlabel('Length')
 
   ax4_1.scatter(x,y, s = 6, facecolors='none', edgecolors='b')
@@ -344,7 +342,7 @@ if option == 'Width - Price':
 
   fig5 = plt.figure()
   plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
-  plt.title('Correlation between Width and Price')
+  plt.title('Correlation between Width and Price', fontweight="bold")
   plt.xlabel('Width')
   plt.ylabel('Price')
   st.pyplot(fig5)
@@ -360,7 +358,7 @@ if option == 'Length - Width':
 
   fig6 = plt.figure()
   plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
-  plt.title('Correlation between Length and Width')
+  plt.title('Correlation between Length and Width', fontweight="bold")
   plt.xlabel('Length')
   plt.ylabel('Width')
   st.pyplot(fig6)
@@ -375,7 +373,7 @@ if option == 'Length - Depth':
 
   fig7 = plt.figure()
   plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
-  plt.title('Correlation between Length and Depth')
+  plt.title('Correlation between Length and Depth', fontweight="bold")
   plt.xlabel('Length')
   plt.ylabel('Depth')
   st.pyplot(fig7)
@@ -392,7 +390,7 @@ if option == 'Number of views last 7 days - Price':
 
   fig8 = plt.figure()
   plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
-  plt.title('Correlation between Number of views last 7 days and Price')
+  plt.title('Correlation between Number of views last 7 days and Price', fontweight="bold")
   plt.xlabel('Number of views last 7 days')
   plt.ylabel('Price')
   st.pyplot(fig8)
@@ -410,7 +408,7 @@ if option == 'Number of views last 7 days - Length':
 
   fig9 = plt.figure()
   plt.scatter(x,y, s = 6,  facecolors='none', edgecolors='b')
-  plt.title('Correlation between Number of views last 7 days and Length')
+  plt.title('Correlation between Number of views last 7 days and Length', fontweight="bold")
   plt.xlabel('Number of views last 7 days')
   plt.ylabel('Length')
   st.pyplot(fig9)
@@ -436,13 +434,15 @@ with col_1:
   fig_2, ax_2 = plt.subplots(figsize = (6,4))
   data_mosaic = boat_df.location.value_counts().head(10)
   labelizer = lambda k: ''
-  mosaic(data_mosaic, gap = 0.025, title='Most frequent locations', label_rotation = 80, labelizer = labelizer, ax= ax_2)
+  mosaic(data_mosaic, gap = 0.025, label_rotation = 80, labelizer = labelizer, ax= ax_2)
+  plt.title('Most frequent locations', fontweight="bold")
   st.pyplot(fig_2)
   st.caption('Main 10 locations in the DataFrame')
 
 with col_2:
   fig_3, ax_3 = plt.subplots(figsize = (6,4))
-  mosaic(boat_df.engine.value_counts()[1:5],  title='Most frequent engines', ax=ax_3)
+  mosaic(boat_df.engine.value_counts()[1:5], labelizer = labelizer, ax=ax_3)
+  plt.title('Most frequent engines',fontweight="bold")
   st.pyplot(fig_3)
   st.caption('Main five engines in the DataFrame')
 
