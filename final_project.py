@@ -7,7 +7,10 @@ import math
 import new_functions as nf 
 import seaborn as sb
 from statsmodels.graphics.mosaicplot import mosaic 
-
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier 
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import KFold
 
 
 boat_df = pd.read_csv('boat_dataset.csv', encoding = 'latin-1') #UTF-8 can't decode byte 0xc3, so we have to read the file in this way, because there are no invalid bytes in that encoding
@@ -93,7 +96,7 @@ for i in range(10344):
 boat_df['depth'] = new_depth
 
 #Dropping rows according to non-null values of the column Width
-boat_df = boat_df[boat_df['width'].notna()]
+boat_df.dropna(subset = ['width'], inplace=True)
 
 #Null values of Depth filled with its mean
 boat_df['depth'].fillna(boat_df['depth'].mean(), inplace=True)
@@ -433,7 +436,7 @@ with col_1:
   fig_2, ax_2 = plt.subplots(figsize = (6,4))
   data_mosaic = boat_df.location.value_counts().head(10)
   labelizer = lambda k: ''
-  mosaic(data_mosaic, gap = 0.025, title='Main 10 Locations', label_rotation = 80, labelizer = labelizer, ax= ax_2)
+  mosaic(data_mosaic, gap = 0.025, title='Most frequent locations', label_rotation = 80, labelizer = labelizer, ax= ax_2)
   st.pyplot(fig_2)
   st.caption('Main 10 locations in the DataFrame')
 
@@ -442,3 +445,67 @@ with col_2:
   mosaic(boat_df.engine.value_counts()[1:5],  title='Most frequent engines', ax=ax_3)
   st.pyplot(fig_3)
   st.caption('Main five engines in the DataFrame')
+
+st.subheader('Classification model')
+st.write('''
+I chose the classification model to understand the condition of boats according to how many views they had in last 7 days. 
+Column 'condition' of the final DataFrame is made by strings, more precisely: *as new*, *new*, *very good*, *well-groomed*, 
+*good*, *used*, *to be done up*, *defect*, *needs a reconditioning*, *for tinkers*, *unkown*. These adjectives can be turned to numbers 
+and can be grouped into three wider classes *unknown*, *good*, *bad* through feature engineering. 
+ ''')
+
+replace_dict = {
+    'as new' : 1,
+    'new': 1,
+    'very good': 1,
+    'weel-groomed': 1,
+    'good': 1,
+    'used': 0,
+    'to be done up': 0,
+    'defect': 0,
+    'needs a reconditioning': 0,
+    'for tinkers': 0,
+    'unkown': 2
+}
+boat_df.condition.replace(replace_dict, inplace = True)
+x = boat_df.number_of_views_last_7_days #we want to predict the condition of the boat according to how many views they had in last 7 days
+y = boat_df.condition
+y = y.astype(str)
+
+#Classification model type 1
+x_train, x_test, y_train, y_test = train_test_split(x,y, test_size = 0.2, random_state= 22)
+model = RandomForestClassifier(random_state = 42)
+model.fit(x_train.to_numpy().reshape(-1,1), y_train)
+y_pred = model.predict(x_test.to_numpy().reshape(-1,1))
+acc_1 = accuracy_score(y_test, y_pred)
+
+#Classification model type 2, with higher accuracy
+x = boat_df[['number_of_views_last_7_days', 'price', 'length', 'width', 'depth']]
+model = RandomForestClassifier(random_state=42)
+x_train, x_test, y_train, y_test = train_test_split(x,y, test_size = 0.2, random_state= 22)
+model.fit(x_train, y_train)
+y_pred = model.predict(x_test)
+acc_2 = accuracy_score(y_pred, y_test)
+
+#using KFold we can be more accurate:
+kf = KFold(n_splits=20, shuffle=True, random_state=42)
+accuracies = []
+for train_index, test_index in kf.split(x): 
+  x_train, x_test = x.iloc[train_index], x.iloc[test_index]
+  y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+  model.fit(x_train, y_train)
+  y_pred = model.predict(x_test)
+  acc = accuracy_score(y_test,y_pred)
+  accuracies.append(acc)
+
+real_acc = sum(accuracies)/len(accuracies)
+
+st.write(f'''
+I used RandomForestClassifier from library sklearn.ensemble to predict values. The accuracy of the model was {acc_1}. Then, 
+I used also columns 'price', 'length', 'width' and 'depth' to predict the data and the respective accuracy was {acc_2}, that is higher 
+than the first, so it is better. 
+\nAnyway, a more precise split of the input data in train and test sets can be achieved using KFold from library sklearn.model_selection. 
+In fact, it provides train/test indices to split data in train/test sets. This function splits the dataset into k consecutive folds, without shuffling by default. 
+Each fold is then used once as a validation while the k - 1 remaining folds form the training set. By deciding *n_spilts = 20* 
+you can have 20 accuracies. Their mean is a more realistic accuracy value, that in this case resulted to be equal to {real_acc}.
+''')
