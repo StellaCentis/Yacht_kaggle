@@ -46,7 +46,7 @@ if st.sidebar.checkbox('Exploration and Cleaning of the DataFrame'):
     column in order to take advantage of this parameter. Analogously it has been done with columns "Width" and "Depth".
     \nThese parameters are useful in order to choose the right berth and to know where the boat can navigate. In addiction, boats under 10 m length don't have to be declared to the tax authorities in Italy.
      In EU there are limitations on the boat license according to the length of the boat. Thus it's really important for buyer to know these data. Therefore, it's appropriate dropping all the rows that have
-     a null entry in column "Width", as they are 63 over 10344. For this aim I used the method notna() to detect valid values in the DataFrame. The resulting DataFrame has 10281 rows. Then I filled the 
+     a null entry in column "Width", as they are 63 over 10344. For this aim I used the method dropna() respect to the subset 'width'. The resulting DataFrame has 10281 rows. Then I filled the 
      null values of column "Depth" with its mean.
     ''')
     st.write('''
@@ -102,8 +102,8 @@ boat_df.dropna(subset = ['width'], inplace=True)
 boat_df['depth'].fillna(boat_df['depth'].mean(), inplace=True)
 
 #Filling the null values in Cert Number of People. Library math is used for the integer part of a number
-null_cert_people_mask = np.isnan(boat_df['cert_number_of_people']) #mask for NaN values
-for i in boat_df['cert_number_of_people'][null_cert_people_mask].index : 
+null_cert_people = np.isnan(boat_df['cert_number_of_people']) #mask for NaN values
+for i in boat_df['cert_number_of_people'][null_cert_people].index : 
   a = math.modf(boat_df.loc[i,'length']) #math.modf returns a tuple of two values. The second is the integer part of the input number
   boat_df.loc[i, 'cert_number_of_people'] = a[1]
 
@@ -127,7 +127,6 @@ boat_df['number_of_views_last_7_days'] = new_views
 boat_df.number_of_views_last_7_days.fillna(boat_df.number_of_views_last_7_days.mean(), inplace=True) #fill the NaN values of Number of views last 7 days
 boat_df.manufacturer.fillna('Unknown', inplace=True) #fill the NaN values of Manufacturer
 boat_df.model.fillna('Unknown', inplace=True) #fill the NaN values of Model
-boat_df.year_built.fillna(boat_df['year_built'].mean(), inplace=True) #fill the NaN values of Year built
 boat_df.condition.fillna('Unknown', inplace=True) #fill the NaN values of Condition
 
 #fill the NaN values of engine and fuel type
@@ -150,8 +149,7 @@ for i in boat_df.price.index:
 
 boat_df.price = new_prices
 
-#All in Euro
-#modification of all the column price in EUR
+#Modification of all the column price in EUR
 for i in boat_df.index:
   if 'CHF' in str(boat_df.loc[i, 'price']):
     words_price = boat_df.loc[i, 'price'].split()
@@ -219,7 +217,8 @@ In the following plots I will compare some relevant relationships between the at
 #In order to have a much more readable manufacturer (also because it is the main one):
 mask = boat_df.manufacturer == 'BÃ©nÃ©teau power boats' 
 boat_df.loc[mask,'manufacturer'] = 'Beneteau'
-colors = plt.get_cmap('Blues')(np.linspace(0.1, 0.9, 10))
+
+colors = plt.get_cmap('Blues')(np.linspace(0.1, 0.9, 10)) #10 shades of blue for the 10 manufacturers
 fig = plt.figure(figsize = (8,6))
 plt.pie(boat_df.manufacturer.value_counts().head(10), labels = boat_df.manufacturer.value_counts().head(10).index, colors = colors, autopct = '%.1f%%', startangle = 335)
 plt.title('Main manufacturers', fontweight="bold")
@@ -259,7 +258,7 @@ ax_1.set_xticklabels( labels , rotation = 45)
 ax_1.set_xlabel("Manufacturer")
 ax_1.set_ylabel("Price")
 st.pyplot(fig_1)
-
+st.caption('Distribution and median comparison of the manufacturers selected.')
 st.write('''
 With this boxplot we can compare the distributions of prices, according to the main nine manufacturers determined. 
 We can notice that Azimut and Fairline power boats have a predominant simmetric distribution and some outliers. Outliers 
@@ -268,21 +267,30 @@ with the main variability in data. Another indicator of variability in data is t
 whiskers. There are no outliers under the lower whiskers, thus their end is the minimum price of the boats. 
 That does not apply to the upper whiskers, as there are ouliers over their extrems.
 \nWhenever the boxes are comparatively short, power boats of that manufacturer have a similar price. On the contrary, 
-they differentiate each other. Some boxes are ina a little bit higher position rather the others, which could suggest a difference 
-between gropus (that is better to investigate). \nMoreover, same median but different distribution is a clear signal that it is always 
+they differentiate each other. Some boxes are in a little bit higher position rather the others, which could suggest a difference 
+between gropus (that is better to investigate). 
+\nMoreover, same median but different distribution is a clear signal that it is always 
 important to consider the pattern of the whole distribution of responses in a box plot.
 \nWe can also compare the mean value of the prices of the selected manufacturers:
 ''')
 
-#Bar chart to compare the most common manufacturers chosen power boats' mean value 
+#Horizontal bar chart to compare the most common manufacturers chosen power boats' mean value 
 data = np.array([boat_df[boat_df.loc[:, 'manufacturer'] == x].price.mean() for x in labels ])
 fig2, ax2 = plt.subplots(figsize=(10,5))
-plt.barh(labels, sorted(data), color = colors)
+df = pd.DataFrame(
+    dict(
+        labels = labels,
+        data = data
+    )
+)
+df_sorted = df.sort_values('data') #in this way values but also their respective labels are sorted
+fig2, ax2 = plt.subplots(figsize=(10,5))
+plt.barh('labels','data', data = df_sorted, color = colors)
 plt.xlabel('Mean price')
 plt.ylabel('Manufacturer')
 plt.title('Mean prices of the first nine main manufacturers in comparison', fontweight="bold")
 st.write(fig2)
-st.caption("Comparison of the power boats' mean value between the most common manufacturers chosen previously")
+st.caption("Comparison of the power boats' mean value between the most common manufacturers chosen previously.")
 st.write('''
 As we can notice, Sunseeker has the highest mean value for boats, as it focuses on superyachts; followed by Princess, which concernes with luxury lifestyle.
 \nThe next plots reflect the considerations that can be taken from the correlation matrix.
@@ -290,7 +298,7 @@ As we can notice, Sunseeker has the highest mean value for boats, as it focuses 
 fig3 = plt.figure(figsize=(8,6))
 sb.heatmap(boat_df.corr(), annot=True)
 st.write(fig3)
-st.caption('Correlation matrix')
+st.caption('Correlation matrix.')
 st.write('''
 Select the correlation you want to deepen in the following multi-selection choice.
 ''')
@@ -312,7 +320,7 @@ if option == 'Length - Price':
   ax4_2.scatter(x,y, s = 6, facecolors='none', edgecolors='b')
 
   # zoom-in / limit the view to different portions of the data
-  ax4_1.set_ylim(1.4e7,3.1e7)  # outliers only
+  ax4_1.set_ylim(1.4e7,3.1e7)  # data far from the most of them
   ax4_2.set_ylim(0,0.5e7)  # most of the data
   ax4_1.set_yticks([1.5e7,2.4e7,3.2e7])
   
@@ -364,7 +372,7 @@ if option == 'Length - Width':
   st.pyplot(fig6)
   expander = st.expander("See explanation")
   expander.write('''
-  Length and width are positively correlated, as more the boat is long, more the boat is wide. Anyway, the boat is reduced to a spaghetti.
+  Length and width are positively correlated, as more the boat is long, more the boat is wide. Otherwise, the boat is reduced to a spaghetti.
   ''')
   
 if option == 'Length - Depth':
@@ -381,7 +389,7 @@ if option == 'Length - Depth':
   expander.write('''
   Correlation between length and depth is almost zero. Depth is the heigth of the portion of the boat that remains under water. 
   In some boats, depth can vary according to the boat's wigth, compromising its possibility to navigate in some areas. The access to a 
-  marina is conditioned by the max depth a boat can have. Customers shoud verify the requested depth of the marina they would like to stay in.
+  marina is conditioned by the max depth a boat can have. Customers should verify the requested depth of the marina they would like to stay in.
   ''')
 
 if option == 'Number of views last 7 days - Price':
@@ -433,25 +441,25 @@ col_1, col_2 = st.columns(2)
 with col_1:
   fig_2, ax_2 = plt.subplots(figsize = (6,4))
   data_mosaic = boat_df.location.value_counts().head(10)
-  labelizer = lambda k: ''
+  labelizer = lambda k: '' #in order to have no labels inside the mosaic: they would overlap
   mosaic(data_mosaic, gap = 0.025, label_rotation = 80, labelizer = labelizer, ax= ax_2)
   plt.title('Most frequent locations', fontweight="bold")
   st.pyplot(fig_2)
-  st.caption('Main 10 locations in the DataFrame')
+  st.caption('Main 10 locations in the DataFrame.')
 
 with col_2:
   fig_3, ax_3 = plt.subplots(figsize = (6,4))
   mosaic(boat_df.engine.value_counts()[1:5], labelizer = labelizer, ax=ax_3)
   plt.title('Most frequent engines',fontweight="bold")
   st.pyplot(fig_3)
-  st.caption('Main five engines in the DataFrame')
+  st.caption('Main five engines in the DataFrame.')
 
 st.subheader('Classification model')
 st.write('''
 I chose the classification model to understand the condition of boats according to how many views they had in last 7 days. 
 Column 'condition' of the final DataFrame is made by strings, more precisely: *as new*, *new*, *very good*, *well-groomed*, 
 *good*, *used*, *to be done up*, *defect*, *needs a reconditioning*, *for tinkers*, *unkown*. These adjectives can be turned to numbers 
-and can be grouped into three wider classes *unknown*, *good*, *bad* through feature engineering. 
+and can be grouped into three wider classes - *unknown*, *good*, *bad* - through feature engineering. 
  ''')
 
 replace_dict = {
@@ -501,11 +509,11 @@ for train_index, test_index in kf.split(x):
 real_acc = sum(accuracies)/len(accuracies)
 
 st.write(f'''
-I used RandomForestClassifier from library sklearn.ensemble to predict values. The accuracy of the model was {acc_1}. Then, 
-I used also columns 'price', 'length', 'width' and 'depth' to predict the data and the respective accuracy was {acc_2}, that is higher 
+I used RandomForestClassifier from library sklearn.ensemble to predict values. The accuracy of the model is {acc_1}. Then, 
+I used also columns 'price', 'length', 'width' and 'depth' to predict the data and the respective accuracy is {acc_2}, that is higher 
 than the first, so it is better. 
 \nAnyway, a more precise split of the input data in train and test sets can be achieved using KFold from library sklearn.model_selection. 
 In fact, it provides train/test indices to split data in train/test sets. This function splits the dataset into k consecutive folds, without shuffling by default. 
 Each fold is then used once as a validation while the k - 1 remaining folds form the training set. By deciding *n_spilts = 20* 
-you can have 20 accuracies. Their mean is a more realistic accuracy value, that in this case resulted to be equal to {real_acc}.
+you can have 20 accuracies. Their mean is a more realistic accuracy value, that in this case results to be equal to {real_acc}.
 ''')
