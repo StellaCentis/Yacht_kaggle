@@ -284,7 +284,6 @@ df = pd.DataFrame(
     )
 )
 df_sorted = df.sort_values('data') #in this way values but also their respective labels are sorted
-fig2, ax2 = plt.subplots(figsize=(10,5))
 plt.barh('labels','data', data = df_sorted, color = colors)
 plt.xlabel('Mean price')
 plt.ylabel('Manufacturer')
